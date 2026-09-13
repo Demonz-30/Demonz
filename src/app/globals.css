@@ -1,26 +1,76 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-brand-purple: #7000FF;
+  --color-brand-purple-light: #9B4DFF;
+  --color-brand-purple-dark: #4A00B3;
+  --color-background: #050505;
+  --color-surface: #111111;
+  --color-surface-hover: #1A1A1A;
+  --color-foreground: #FAFAFA;
+  --color-foreground-muted: #A1A1AA;
+  --color-border: #27272A;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #050505;
+    --foreground: #FAFAFA;
+    --brand: #7000FF;
+  }
+  
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    body {
+      cursor: none;
+    }
+    a, button, [role="button"], input, select, textarea {
+      cursor: none;
+    }
+  }
+  html {
+    scroll-behavior: initial; /* Lenis handles this */
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    @apply selection:bg-brand-purple selection:text-white;
   }
 }
 
-body {
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .clip-bottom {
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  }
+  
+  .clip-reveal {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transition: clip-path 1s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+}
+
+/* Hide scrollbar for cleaner look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272A;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand);
 }
