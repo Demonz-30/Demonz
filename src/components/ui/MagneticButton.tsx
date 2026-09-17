@@ -77,7 +77,6 @@ export function MagneticButton({ children, className, onClick, href }: MagneticB
       className={cn("relative inline-flex items-center justify-center p-4", className)}
       {...props}
     >
-      <span className="relative z-10">{children}</span>
       <span className="relative z-10 flex items-center gap-2">{children}</span>
     </Component>
   );

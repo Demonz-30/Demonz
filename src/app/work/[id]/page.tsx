@@ -1,12 +1,12 @@
-import { getProjectById, getAppProjects } from "@/data/projects";
+import { getProjectById, getCaseStudyProjects } from "@/data/projects";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { TransitionLink } from "@/components/layout/PageTransition";
 import { CaseStudyHeroMotion } from "@/components/case-study/CaseStudyMotion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 
 export async function generateStaticParams() {
-  return getAppProjects().map((p) => ({
+  return getCaseStudyProjects().map((p) => ({
     id: p.id,
   }));
 }
@@ -15,7 +15,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const resolvedParams = await params;
   const project = getProjectById(resolvedParams.id);
   
-  if (!project || !project.isApp || !project.caseStudy) {
+  if (!project || !project.caseStudy) {
     notFound();
   }
 
@@ -24,29 +24,45 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const image2 = project.media.mobileMockups?.[1];
   const isLandscape = project.id === "gizvana" || (project.media.orientation === "landscape" && project.id !== "finora" && project.id !== "hyperassist" && project.id !== "jadwalku");
 
-  const appProjects = getAppProjects();
-  const currentIndex = appProjects.findIndex((p) => p.id === project.id);
-  const nextProject = appProjects[(currentIndex + 1) % appProjects.length];
+  const caseStudyProjects = getCaseStudyProjects();
+  const currentIndex = caseStudyProjects.findIndex((p) => p.id === project.id);
+  const nextProject = caseStudyProjects[(currentIndex + 1) % caseStudyProjects.length];
 
   return (
     <div className="bg-background min-h-screen text-foreground selection:bg-brand-purple selection:text-white">
-      {/* Navbar Minimal */}
-      <nav className="fixed top-0 left-0 w-full z-50 p-6 md:p-12 flex justify-between items-center mix-blend-difference pointer-events-none">
-        <TransitionLink href="/" className="pointer-events-auto flex items-center gap-3 text-white hover:text-brand-purple transition-colors font-bold tracking-widest text-sm uppercase">
-          <ArrowLeft size={20} />
-          Back to Portfolio
-        </TransitionLink>
-      </nav>
-
       {/* Hero Case Study */}
       <section className="relative min-h-[80vh] flex flex-col items-center justify-center pt-32 pb-12 overflow-hidden" style={{ backgroundColor: project.accent + "10" }}>
+        <div className="absolute top-24 left-6 md:left-12 z-30">
+          <TransitionLink href="/work" className="inline-flex items-center gap-2 text-white/70 hover:text-brand-purple transition-colors font-bold tracking-widest text-xs uppercase group bg-surface/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
+            <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" />
+            BACK TO WORK
+          </TransitionLink>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background z-10"></div>
         
         <CaseStudyHeroMotion>
           <div className="relative z-20 text-center px-6 max-w-4xl mx-auto flex flex-col items-center">
-            <span className="cs-reveal px-4 py-2 border border-white/20 rounded-full text-xs font-mono tracking-widest uppercase mb-8" style={{ color: project.accent, borderColor: project.accent }}>
-              App Case Study
-            </span>
+            <div className="flex flex-wrap items-center justify-center gap-4 cs-reveal mb-8">
+              <span className="px-4 py-2 border border-white/20 rounded-full text-xs font-mono tracking-widest uppercase" style={{ color: project.accent, borderColor: project.accent }}>
+                {project.category === "brand-business"
+                  ? "Brand & Business Case Study"
+                  : project.category === "creative-direction"
+                  ? "Creative Direction Case Study"
+                  : "App Case Study"}
+              </span>
+              {project.links?.live && (
+                <a
+                  href={project.links.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-white/20 hover:border-white/40 bg-surface/80 hover:bg-surface rounded-full text-xs font-mono tracking-widest uppercase text-white transition-all duration-300 group shadow-lg"
+                  data-cursor="pointer"
+                >
+                  <span>Visit Website</span>
+                  <ExternalLink size={12} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" style={{ color: project.accent }} />
+                </a>
+              )}
+            </div>
             <h1 className="cs-reveal text-5xl md:text-8xl font-black tracking-tighter mb-6">{project.title}</h1>
             <p className="cs-reveal text-xl md:text-3xl text-foreground-muted font-light text-balance mb-12">{project.subtitle}</p>
           </div>
@@ -58,7 +74,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 <div className="relative w-full h-full rounded-xl overflow-hidden bg-[#050505]">
                   <Image 
                     src={image1} 
-                    alt={`${project.title} Interface Preview`} 
+                    alt={`${project.title} Preview`}
                     fill 
                     sizes="(max-width: 768px) 100vw, 760px" 
                     className="object-contain" 
@@ -99,6 +115,20 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <div>
               <h2 className="text-sm font-bold tracking-widest text-brand-purple mb-6 uppercase">STATUS // CURRENT</h2>
               <p className="text-xl font-medium">{caseStudy.status}</p>
+              {project.links?.live && (
+                <div className="mt-8">
+                  <a
+                    href={project.links.live}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2.5 text-xs font-mono font-bold tracking-widest uppercase text-white bg-surface hover:bg-white/10 border border-white/20 hover:border-white/40 px-6 py-3.5 rounded-full transition-all duration-300 group shadow-lg"
+                    data-cursor="pointer"
+                  >
+                    <span>Visit Website</span>
+                    <ExternalLink size={14} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" style={{ color: project.accent }} />
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 
@@ -163,10 +193,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               <span className="transition-transform duration-300 group-hover:translate-x-1" style={{ color: nextProject.accent }}>→</span>
             </TransitionLink>
             <TransitionLink
-              href="/"
+              href="/work"
               className="inline-flex items-center gap-2 text-xs font-mono tracking-widest uppercase text-white/50 hover:text-white transition-colors px-4 py-2"
             >
-              ← Back to Home
+              ← Back to Work
             </TransitionLink>
           </div>
         </div>

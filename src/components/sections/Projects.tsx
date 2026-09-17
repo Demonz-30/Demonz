@@ -77,6 +77,7 @@ export function Projects() {
             const primaryVisual: string = project.media.cover || project.media.dashboardPreview || "";
             const accent = project.accentColor || "#7000FF";
             const isPortrait = project.media.orientation === "portrait";
+            const isSquare = project.media.orientation === "square" || project.media.aspectRatio === "1/1";
 
             return (
               <div 
@@ -156,24 +157,45 @@ export function Projects() {
 
                     <div className="relative z-10 w-full flex items-center justify-center">
                       {isPortrait ? (
-                        <div className="relative w-full max-w-[260px] sm:max-w-[300px] md:max-w-[320px] aspect-[9/20] rounded-2xl overflow-hidden border border-white/15 bg-black/80 shadow-2xl transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                        <div className={`relative w-full ${
+                          project.media.aspectRatio === "4/5"
+                            ? "max-w-[280px] sm:max-w-[320px] md:max-w-[340px] aspect-[4/5]"
+                            : "max-w-[260px] sm:max-w-[300px] md:max-w-[320px] aspect-[9/20]"
+                        } rounded-2xl overflow-hidden border border-white/15 bg-black/80 shadow-2xl transition-transform duration-700 ease-out group-hover:scale-[1.03]`}>
                           <Image 
                             src={primaryVisual}
-                            alt={`${project.title} Dashboard`}
+                            alt={`${project.title} Dashboard Screenshot`}
                             fill
                             sizes="(max-width: 768px) 260px, 320px"
                             className="object-contain"
                             priority={index === 0}
                           />
                         </div>
+                      ) : isSquare ? (
+                        <div className="relative w-full max-w-[300px] sm:max-w-[340px] md:max-w-[380px] aspect-square rounded-2xl overflow-hidden bg-black/40 border border-white/5 p-4 sm:p-6 md:p-8 flex items-center justify-center transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                          <div className="relative w-full h-full flex items-center justify-center">
+                            <Image
+                              src={primaryVisual}
+                              alt={`${project.title} Visual Presentation`}
+                              fill
+                              sizes="(max-width: 768px) 300px, 380px"
+                              className="object-contain drop-shadow-2xl"
+                              priority={index === 0}
+                            />
+                          </div>
+                        </div>
                       ) : (
-                        <div className="relative w-full max-w-[580px] aspect-[16/10] rounded-xl overflow-hidden bg-black/40 border border-white/5 p-4 sm:p-6 md:p-8 flex items-center justify-center transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                        <div
+                          className={`relative w-full ${
+                            project.media.aspectRatio === "2/1" ? "max-w-[620px] aspect-[2/1]" : "max-w-[560px] aspect-[3/2]"
+                          } rounded-xl overflow-hidden bg-black/40 border border-white/5 p-4 sm:p-6 md:p-8 flex items-center justify-center transition-transform duration-700 ease-out group-hover:scale-[1.03]`}
+                        >
                           <div className="relative w-full h-full flex items-center justify-center">
                             <Image 
                               src={primaryVisual}
                               alt={`${project.title} Visual Presentation`}
                               fill
-                              sizes="(max-width: 1024px) 100vw, 580px"
+                              sizes="(max-width: 1024px) 100vw, 620px"
                               className="object-contain drop-shadow-2xl"
                               priority={index === 0}
                             />
@@ -208,9 +230,11 @@ export function Projects() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {otherProjects.map((project) => (
-                <div 
+                <TransitionLink
                   key={project.id}
-                  className="project-card-reveal rounded-2xl border border-white/10 bg-surface/30 p-8 flex flex-col justify-between hover:border-white/20 transition-all duration-300"
+                  href={`/work/${project.id}`}
+                  data-cursor="project"
+                  className="project-card-reveal group rounded-2xl border border-white/10 bg-surface/30 p-8 flex flex-col justify-between hover:border-white/20 transition-all duration-300 block"
                 >
                   <div>
                     {project.media.cover && (
@@ -220,7 +244,7 @@ export function Projects() {
                           alt={project.title} 
                           fill 
                           sizes="(max-width: 768px) 100vw, 50vw" 
-                          className="object-cover" 
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                         />
                       </div>
                     )}
@@ -230,19 +254,29 @@ export function Projects() {
                         {project.category}
                       </span>
                     </div>
-                    <h3 className="text-2xl font-bold tracking-tight text-white mb-2 uppercase">{project.title}</h3>
+                    <div className="flex items-center justify-between gap-4 mb-2">
+                      <h3 className="text-2xl font-bold tracking-tight text-white uppercase group-hover:text-brand-purple-light transition-colors">{project.title}</h3>
+                      <span className="text-sm font-mono text-zinc-500 group-hover:text-white transition-colors group-hover:translate-x-1 duration-300" style={{ color: project.accentColor || "#7000FF" }}>→</span>
+                    </div>
                     <p className="text-sm font-mono text-brand-purple-light mb-4">{project.subtitle}</p>
                     <p className="text-sm text-zinc-400 font-light leading-relaxed mb-6">{project.description}</p>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
-                    {project.stack.map((tech) => (
-                      <span key={tech} className="text-[11px] font-mono text-zinc-400 bg-background/60 px-2.5 py-1 rounded">
-                        {tech}
-                      </span>
-                    ))}
+                  <div>
+                    <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5 mb-6">
+                      {project.stack.map((tech) => (
+                        <span key={tech} className="text-[11px] font-mono text-zinc-400 bg-background/60 px-2.5 py-1 rounded">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">
+                      <span>Explore Case Study</span>
+                      <span className="transition-transform duration-300 group-hover:translate-x-1" style={{ color: project.accentColor || "#7000FF" }}>→</span>
+                    </div>
                   </div>
-                </div>
+                </TransitionLink>
               ))}
             </div>
           </div>

@@ -12,8 +12,10 @@ export function CustomCursor() {
   useEffect(() => {
     const checkSupport = () => {
       const isCoarse = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
+      const isMobile = window.innerWidth < 768;
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       setEnabled(!isCoarse && !prefersReduced);
+      setEnabled(!isCoarse && !isMobile && !prefersReduced);
     };
 
     checkSupport();

@@ -4,7 +4,7 @@
   --color-brand-purple: #7000FF;
   --color-brand-purple-light: #9B4DFF;
   --color-brand-purple-dark: #4A00B3;
-  --color-background: #050505;
+  --color-background: #000000;
   --color-surface: #111111;
   --color-surface-hover: #1A1A1A;
   --color-foreground: #FAFAFA;
@@ -17,7 +17,7 @@
 
 @layer base {
   :root {
-    --background: #050505;
+    --background: #000000;
     --foreground: #FAFAFA;
     --brand: #7000FF;
   }
@@ -42,6 +42,16 @@
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     @apply selection:bg-brand-purple selection:text-white;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 

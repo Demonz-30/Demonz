@@ -17,6 +17,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
   const logoRef = useRef<HTMLDivElement>(null);
   const isAnimatingRef = useRef(false);
   const animationTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const transitionTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
   // Entrance animation on pathname change
   useEffect(() => {
@@ -26,17 +27,26 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       animationTimerRef.current = null;
     }
 
-    if (typeof window !== "undefined") {
-      window.scrollTo(0, 0);
-    }
+    transitionTimelineRef.current?.kill();
+    transitionTimelineRef.current = null;
 
     if (overlayRef.current && logoRef.current) {
       const tl = gsap.timeline();
+      transitionTimelineRef.current = tl;
       tl.to(logoRef.current, { scale: 1.2, opacity: 0, duration: 0.25, ease: "power2.in" })
         .to(overlayRef.current, { clipPath: "circle(0% at 50% 50%)", duration: 0.35, ease: "power4.inOut" }, "-=0.1")
         .set(overlayRef.current, { display: "none" });
     }
+
+    return () => {
+      transitionTimelineRef.current?.kill();
+    };
   }, [pathname]);
+
+  useEffect(() => () => {
+    if (animationTimerRef.current) clearTimeout(animationTimerRef.current);
+    transitionTimelineRef.current?.kill();
+  }, []);
 
   const navigate = (href: string) => {
     if (href === pathname || isAnimatingRef.current) return;
@@ -47,7 +57,6 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (prefersReducedMotion) {
-      if (typeof window !== "undefined") window.scrollTo(0, 0);
       router.push(href);
       return;
     }
@@ -62,20 +71,20 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
     }, 1200);
 
     if (overlayRef.current && logoRef.current) {
+      transitionTimelineRef.current?.kill();
       gsap.set(overlayRef.current, { display: "flex", clipPath: "circle(0% at 50% 50%)" });
       gsap.set(logoRef.current, { scale: 0.6, opacity: 0 });
 
       const tl = gsap.timeline({
         onComplete: () => {
-          if (typeof window !== "undefined") window.scrollTo(0, 0);
           router.push(href);
         }
       });
+      transitionTimelineRef.current = tl;
 
       tl.to(overlayRef.current, { clipPath: "circle(150% at 50% 50%)", duration: 0.45, ease: "power4.inOut" })
         .to(logoRef.current, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.5)" }, "-=0.2");
     } else {
-      if (typeof window !== "undefined") window.scrollTo(0, 0);
       router.push(href);
       isAnimatingRef.current = false;
     }

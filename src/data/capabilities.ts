@@ -26,10 +26,9 @@ export interface WhatIDoItem {
 export const primaryCapabilities: PrimaryCapability[] = [
   {
     id: "01",
-    title: "PRODUCT & WEB ENGINEERING",
-    tagline: "Modern Web Applications & Component Systems",
-    description:
-      "Merancang aplikasi web modern yang responsif dengan arsitektur komponen modular, integrasi API, dan struktur frontend yang terorganisir.",
+    title: "PRODUCT ENGINEERING",
+    tagline: "Full-Stack Web & Web Applications",
+    description: "Architecting responsive, high-performance web applications with clean component trees, robust state management, and reliable API integration.",
     technologies: [
       "Next.js",
       "React",
@@ -49,10 +48,9 @@ export const primaryCapabilities: PrimaryCapability[] = [
   },
   {
     id: "02",
-    title: "MOBILE APPLICATION ARCHITECTURE",
-    tagline: "Native Android & Cross-Platform Systems",
-    description:
-      "Membangun aplikasi mobile native dan cross-platform dengan fokus pada local persistence, offline-first behavior, sinkronisasi data, dan pengalaman aplikasi yang responsif.",
+    title: "MOBILE & SYSTEMS",
+    tagline: "Native & Cross-Platform Mobile",
+    description: "Building production-grade mobile applications with offline-first local persistence, background synchronization, and realtime datastores.",
     technologies: [
       "Android SDK",
       "Kotlin",
@@ -72,57 +70,55 @@ export const primaryCapabilities: PrimaryCapability[] = [
   },
   {
     id: "03",
-    title: "CREATIVE TECHNOLOGY & INTERACTIVE SYSTEMS",
-    tagline: "WebGL, Canvas & Motion Systems",
-    description:
-      "Menggabungkan engineering dan visual melalui interactive canvas, 3D rendering, shader-based effects, dan motion systems pada pengalaman digital.",
+    title: "CREATIVE TECHNOLOGY",
+    tagline: "Interactive 3D & Motion Systems",
+    description: "Crafting expressive digital interfaces with procedural shaders, WebGL canvas integration, and choreographing performant kinetic motion.",
     technologies: [
       "Three.js",
       "React Three Fiber",
-      "WebGL",
+      "WebGL Shaders",
       "GSAP",
-      "Canvas API",
+      "ScrollTrigger",
       "UI/UX Architecture"
     ],
     stack: [
       "Three.js",
       "React Three Fiber",
-      "WebGL",
+      "WebGL Shaders",
       "GSAP",
-      "Canvas API",
+      "ScrollTrigger",
       "UI/UX Architecture"
     ]
   },
   {
     id: "04",
-    title: "AI-ASSISTED WORKFLOWS & AUTOMATION",
-    tagline: "Intelligent Workflows & Process Automation",
-    description:
-      "Membangun workflow berbasis AI, parsing, application logic, scripting, dan automation untuk membantu proses digital menjadi lebih terstruktur dan efisien.",
+    title: "AI & AUTOMATION",
+    tagline: "Intelligent Workflows & Logic",
+    description: "Integrating algorithmic task orchestration, intelligent matching engines, automated reporting pipelines, and Python script automation.",
     technologies: [
-      "Python",
-      "AI-Assisted Workflows",
-      "Data Parsing",
-      "Script Automation",
-      "Application Logic"
+      "AI Matching Engine",
+      "Task Parsing",
+      "AI-Assisted Workflow",
+      "Python Scripting",
+      "Process Automation"
     ],
     stack: [
-      "Python",
-      "AI-Assisted Workflows",
-      "Data Parsing",
-      "Script Automation",
-      "Application Logic"
+      "AI Matching Engine",
+      "Task Parsing",
+      "AI-Assisted Workflow",
+      "Python Scripting",
+      "Process Automation"
     ]
   }
 ];
 
 export const supportingDisciplines: SupportingDiscipline[] = [
   {
-    id: "A",
+    id: "05",
     title: "UI/UX & BRAND DESIGN SYSTEMS",
     tagline: "Design Systems & Visual Identity",
     description:
-      "Merancang identitas visual, sistem desain, hierarki tipografi, dan antarmuka produk digital yang memiliki karakter visual konsisten.",
+      "Designing visual identities, comprehensive design systems, typographic hierarchies, and digital product interfaces with consistent visual character.",
     skills: [
       "UI/UX Architecture",
       "Design Systems",

@@ -1,4 +1,3 @@
-import { Philosophy } from "@/components/sections/Philosophy";
 import { Contact } from "@/components/sections/Contact";
 
 export const metadata = {
@@ -9,7 +8,6 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <div className="flex flex-col w-full bg-background overflow-hidden min-h-screen">
-      <Philosophy />
       <Contact />
     </div>
   );

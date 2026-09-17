@@ -3,14 +3,17 @@
 import Image from "next/image";
 import { content } from "@/data/content";
 import { TransitionLink } from "@/components/layout/PageTransition";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 export function AboutSummary() {
+  const sectionRef = useScrollReveal<HTMLElement>({ selector: "[data-home-reveal]", stagger: 0.1 });
+
   return (
-    <section id="about" className="py-32 md:py-44 px-6 md:px-12 bg-surface/30 relative z-10 border-t border-white/5">
+    <section ref={sectionRef} id="about" className="py-32 md:py-44 px-6 md:px-12 bg-surface/30 relative z-10 border-t border-white/5">
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}
-        <div className="mb-20 md:mb-28 border-b border-white/10 pb-8">
+        <div data-home-reveal className="mb-20 md:mb-28 border-b border-white/10 pb-8">
           <span className="text-xs font-mono tracking-widest text-brand-purple-light uppercase mb-4 block">
             {"04 // ABOUT & PHILOSOPHY"}
           </span>
@@ -22,7 +25,7 @@ export function AboutSummary() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
           
           {/* Portrait Column */}
-          <div className="lg:col-span-5 relative w-full aspect-[4/5] max-w-md mx-auto lg:mx-0">
+          <div data-home-reveal className="lg:col-span-5 relative w-full aspect-[4/5] max-w-md mx-auto lg:mx-0">
             <div className="w-full h-full relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-surface">
               <Image 
                 src="/assets/media/portrait-main.webp" 
@@ -38,7 +41,7 @@ export function AboutSummary() {
           </div>
 
           {/* Statement & Philosophy Column */}
-          <div className="lg:col-span-7 flex flex-col justify-center">
+          <div data-home-reveal className="lg:col-span-7 flex flex-col justify-center">
             <h3 className="text-2xl md:text-4xl font-bold tracking-tight text-white mb-6 uppercase">
               {content.about.heading}
             </h3>

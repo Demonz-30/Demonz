@@ -29,19 +29,28 @@ function ScrollTriggerSync() {
   const lenis = useLenis();
   const pathname = usePathname();
 
-  // Route change scroll coordination: resets scroll and refreshes ScrollTrigger triggers cleanly
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.scrollTo(0, 0);
-    }
+    if (typeof window === "undefined") return;
+
+    window.scrollTo(0, 0);
     if (lenis) {
       lenis.scrollTo(0, { immediate: true });
     }
-    const refreshTimer = setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 150);
 
-    return () => clearTimeout(refreshTimer);
+    let frame = 0;
+    let secondFrame = 0;
+    const refreshAfterLayout = () => {
+      frame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(() => ScrollTrigger.refresh());
+      });
+    };
+
+    refreshAfterLayout();
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(secondFrame);
+    };
   }, [pathname, lenis]);
 
   useEffect(() => {
@@ -57,26 +66,28 @@ function ScrollTriggerSync() {
     // Force manual scroll restoration so page refresh always starts cleanly at top
     if (typeof window !== "undefined") {
       window.history.scrollRestoration = "manual";
-      window.scrollTo(0, 0);
     }
 
     if (!lenis) return;
 
-    lenis.scrollTo(0, { immediate: true });
+    // F-06: Disable GSAP lagSmoothing to prevent clock divergence during frame spikes
+    gsap.ticker.lagSmoothing(0);
+
+    // F-06: Drive Lenis from GSAP ticker (time provided in seconds, converted to ms)
+    const updateTicker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+
+    gsap.ticker.add(updateTicker);
 
     // Connect Lenis scroll events to GSAP ScrollTrigger
     const unbind = lenis.on("scroll", () => {
       ScrollTrigger.update();
     });
 
-    // Refresh ScrollTrigger once Lenis is ready
-    const timer = setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 100);
-
     return () => {
+      gsap.ticker.remove(updateTicker);
       unbind();
-      clearTimeout(timer);
     };
   }, [lenis]);
 
@@ -91,7 +102,11 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <ReactLenis root options={{ lerp: reducedMotion ? 1 : 0.08, duration: reducedMotion ? 0 : 1.5, syncTouch: false }}>
+    <ReactLenis
+      root
+      autoRaf={false}
+      options={{ lerp: reducedMotion ? 1 : 0.08, duration: reducedMotion ? 0 : 1.5, syncTouch: false }}
+    >
       <ScrollTriggerSync />
       {children}
     </ReactLenis>

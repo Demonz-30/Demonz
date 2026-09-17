@@ -11,7 +11,7 @@ export interface ProjectMedia {
   banner?: string;
   dashboardPreview?: string;
   aspectRatio?: string;
-  orientation?: "landscape" | "portrait";
+  orientation?: "landscape" | "portrait" | "square";
 }
 
 export interface ProjectCaseStudy {
@@ -198,8 +198,8 @@ export const projects: Project[] = [
     media: {
       cover: "/assets/projects/hyperassist-1.jpg",
       dashboardPreview: "/assets/projects/hyperassist-dashboard.jpeg",
-      aspectRatio: "3/2",
-      orientation: "landscape",
+      aspectRatio: "1/1",
+      orientation: "square",
       mobileMockups: [
         "/assets/projects/hyperassist-dashboard.jpeg"
       ]
@@ -253,10 +253,11 @@ export const projects: Project[] = [
     media: {
       cover: "/assets/projects/logo-jadwalku.jpeg",
       dashboardPreview: "/assets/projects/jadwalku-dashboard.jpeg",
-      aspectRatio: "3/2",
-      orientation: "landscape",
+      aspectRatio: "4/5",
+      orientation: "portrait",
       mobileMockups: [
-        "/assets/projects/jadwalku-dashboard.jpeg"
+        "/assets/projects/jadwalku-dashboard.jpeg",
+        "/assets/projects/logo-jadwalku.jpeg"
       ]
     },
     caseStudy: {
@@ -305,8 +306,42 @@ export const projects: Project[] = [
     focus: ["Product Development", "Branding", "Photography", "Marketing", "Content"],
     stack: ["Product Development", "Branding", "Photography", "Marketing", "Content Strategy"],
     media: {
-      cover: "/assets/projects/demonz-coffee.jpg",
-      coverWebp: "/assets/projects/demonz-coffee.webp"
+      cover: "/assets/photography/demonz-coffee.webp",
+      coverWebp: "/assets/photography/demonz-coffee.webp",
+      aspectRatio: "16/10",
+      orientation: "landscape"
+    },
+    links: {
+      live: "https://demonzcoffe.web.id"
+    },
+    caseStudy: {
+      overview: "Demonz Coffee is a real-world coffee business venture combining product development, brand identity, commercial photography, marketing, content creation, and digital presence.",
+      problem: "Establishing a physical and digital coffee brand requires integrating product development, distinctive visual identity, digital customer experience, and content marketing into a coherent system.",
+      solution: "An end-to-end brand ecosystem connecting roast formulation, packaging design, high-quality commercial photography, digital web channels, and strategic marketing.",
+      product: "A real-world commercial coffee business encompassing product formulation, packaging design, brand assets, and digital presence.",
+      design: "Artisanal modern visual aesthetic balancing rich coffee tones, structured typography, tactile packaging, and cohesive digital design.",
+      development: "Brand identity architecture, digital presence at demonzcoffe.web.id, and scalable content workflows.",
+      technology: "Product Development, Brand Architecture, Commercial Photography, Web Presence, Content Strategy.",
+      architecture: "Omnichannel brand platform connecting physical craft with digital presence and social distribution.",
+      keyFeatures: [
+        "Product Development & Formulation",
+        "Brand Identity & Packaging Design",
+        "Commercial Photography & Visual Storytelling",
+        "Marketing & Content Strategy",
+        "Digital Presence & Web Platform"
+      ],
+      features: [
+        "Product Development & Formulation",
+        "Brand Identity & Packaging Design",
+        "Commercial Photography & Visual Storytelling",
+        "Marketing & Content Strategy",
+        "Digital Presence & Web Platform"
+      ],
+      technologies: {
+        frontend: ["Web Presence", "Digital Platform"],
+        backend: ["Content Strategy", "Brand Architecture"]
+      },
+      status: "Active Development"
     }
   },
   {
@@ -325,8 +360,39 @@ export const projects: Project[] = [
     focus: ["Photography", "Cinematography", "Video Editing", "Promotional Content"],
     stack: ["Photography", "Cinematography", "Video Editing", "Color Grading", "Visual Storytelling"],
     media: {
-      cover: "/assets/projects/creative-multimedia.jpg",
-      coverWebp: "/assets/projects/creative-multimedia.webp"
+      cover: "/assets/photography/creative-multimedia.jpg",
+      coverWebp: "/assets/photography/creative-multimedia.jpg",
+      aspectRatio: "16/10",
+      orientation: "landscape"
+    },
+    caseStudy: {
+      overview: "Creative Multimedia is a multidisciplinary discipline dedicated to photography, cinematography, video editing, promotional content, and cinematic visual storytelling.",
+      problem: "Delivering powerful visual stories requires mastering both creative direction and technical rigor across lighting, framing, narrative pacing, and color science.",
+      solution: "A disciplined visual production pipeline combining editorial photography, cinematic camera movement, color grading science, and multi-platform promotional editing.",
+      product: "A versatile creative direction archive encompassing editorial photography, brand motion reels, and promotional visual campaigns.",
+      design: "Cinematic atmosphere defined by high-contrast lighting, intentional composition, restrained color grading palettes, and immersive rhythm.",
+      development: "End-to-end creative workflows: pre-production planning, camera operation, post-production editing, color grading, and format optimization.",
+      technology: "Commercial Photography, Cinematography, Video Editing, Color Grading, Visual Storytelling.",
+      architecture: "Production-ready creative pipeline optimized for high-resolution visual output and multi-channel distribution.",
+      keyFeatures: [
+        "Commercial & Editorial Photography",
+        "Cinematography & Motion Direction",
+        "Post-Production & Video Editing",
+        "Bespoke Color Grading & Science",
+        "Visual Storytelling & Promotional Content"
+      ],
+      features: [
+        "Commercial & Editorial Photography",
+        "Cinematography & Motion Direction",
+        "Post-Production & Video Editing",
+        "Bespoke Color Grading & Science",
+        "Visual Storytelling & Promotional Content"
+      ],
+      technologies: {
+        frontend: ["Visual Storytelling", "Cinematography"],
+        backend: ["Post-Production", "Color Grading"]
+      },
+      status: "Active Development"
     }
   }
 ];
@@ -341,4 +407,8 @@ export function getFeaturedProjects(): Project[] {
 
 export function getAppProjects(): Project[] {
   return projects.filter((project) => project.isApp);
+}
+
+export function getCaseStudyProjects(): Project[] {
+  return projects.filter((project) => Boolean(project.caseStudy));
 }

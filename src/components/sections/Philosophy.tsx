@@ -37,6 +37,13 @@ export function Philosophy() {
       }
     });
 
+    mm.add("(prefers-reduced-motion: reduce)", () => {
+      if (textRef.current) {
+        const lines = textRef.current.querySelectorAll(".phil-line");
+        gsap.set(lines, { opacity: 1, y: 0, filter: "none", rotationX: 0 });
+      }
+    });
+
     return () => mm.revert();
   }, []);
 

@@ -5,59 +5,24 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DemonzLogo } from "@/components/canvas/DemonzLogo";
+import { experimentsData, ExperimentItem } from "@/data/experiments";
+import { TransitionLink } from "@/components/layout/PageTransition";
+import { ArrowUpRight } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const experimentsData = [
-  {
-    id: "01",
-    title: "DIGITAL IDENTITY",
-    desc: "Interactive branding and visual identity exploration.",
-    image: "/assets/brand/demonz-logo.jpg",
-  },
-  {
-    id: "02",
-    title: "CREATIVE CODE",
-    desc: "Generative visual systems responding to user input.",
-    image: null, // We'll use a CSS gradient/shader placeholder
-  },
-  {
-    id: "03",
-    title: "PHOTOGRAPHY",
-    desc: "Editorial composition and visual storytelling.",
-    image: "/assets/photography/photo-1.jpg",
-  },
-  {
-    id: "04",
-    title: "MOTION",
-    desc: "Kinetic motion design and video editing.",
-    image: "/assets/projects/creative-multimedia.jpg",
-  },
-  {
-    id: "05",
-    title: "WEB EXPERIENCE",
-    desc: "Miniature interactive UI and frontend experiments.",
-    image: "/assets/projects/gizvana-1.jpg",
-  },
-  {
-    id: "06",
-    title: "AI / FUTURE",
-    desc: "Exploring AI-assisted workflows and interfaces.",
-    image: "/assets/projects/hyperassist-1.jpg",
-  }
-];
-
-function ExperimentCard({ data }: { data: typeof experimentsData[0] }) {
+function ExperimentCard({ data }: { data: ExperimentItem }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const card = cardRef.current;
     const reveal = revealRef.current;
     if (!card || !reveal) return;
 
-    // We only enable 3D rotation on devices with hover to save performance/avoid touch glitches
     const mm = gsap.matchMedia();
+
+    // Fine-pointer desktop interaction: 3D tilt and circle clip-path expansion
     mm.add("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
       const xTo = gsap.quickTo(card, "rotationY", { duration: 0.8, ease: "power3.out" });
       const yTo = gsap.quickTo(card, "rotationX", { duration: 0.8, ease: "power3.out" });
@@ -66,21 +31,21 @@ function ExperimentCard({ data }: { data: typeof experimentsData[0] }) {
 
       const handleMouseMove = (e: MouseEvent) => {
         const rect = card.getBoundingClientRect();
-        // Normalized coordinates -1 to 1
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
 
-        // Rotation intensity
-        xTo(x * 20); // max 10 deg
+        xTo(x * 20);
         yTo(-y * 20);
-        
-        // Subtle magnetic pull
         transX(x * 15);
         transY(y * 15);
       };
 
       const handleMouseEnter = () => {
-        gsap.to(reveal, { clipPath: "circle(150% at 50% 50%)", duration: 0.8, ease: "power4.inOut" });
+        gsap.to(reveal, {
+          clipPath: "circle(150% at 50% 50%)",
+          duration: 0.8,
+          ease: "power4.inOut",
+        });
       };
 
       const handleMouseLeave = () => {
@@ -88,10 +53,14 @@ function ExperimentCard({ data }: { data: typeof experimentsData[0] }) {
         yTo(0);
         transX(0);
         transY(0);
-        gsap.to(reveal, { clipPath: "circle(0% at 50% 50%)", duration: 0.8, ease: "power4.inOut" });
+        gsap.to(reveal, {
+          clipPath: "circle(0% at 50% 50%)",
+          duration: 0.8,
+          ease: "power4.inOut",
+        });
       };
 
-      // Set initial clip-path
+      // Set initial clip-path for fine-pointer desktop
       gsap.set(reveal, { clipPath: "circle(0% at 50% 50%)" });
 
       card.addEventListener("mousemove", handleMouseMove);
@@ -104,45 +73,85 @@ function ExperimentCard({ data }: { data: typeof experimentsData[0] }) {
         card.removeEventListener("mouseleave", handleMouseLeave);
       };
     });
-    
-    // Touch/Mobile fallback
-    mm.add("(max-width: 768px)", () => {
-       gsap.set(reveal, { clipPath: "circle(150% at 50% 50%)", opacity: 0.15 });
+
+    // Mobile / Touch / Non-desktop: fully reveal single clear text state without ghosting
+    mm.add("(max-width: 1023px), (hover: none)", () => {
+      gsap.set(reveal, { clipPath: "circle(150% at 50% 50%)" });
     });
 
     return () => mm.revert();
   }, []);
 
   return (
-    <div className="perspective-1000 w-full mb-12 last:mb-0">
-      <div 
-        ref={cardRef} 
-        className="w-full h-[300px] md:h-[450px] relative border border-white/10 bg-surface/50 rounded-2xl flex items-center justify-center cursor-pointer transform-style-3d group"
+    <div className="perspective-1000 w-full mb-10 last:mb-0">
+      <div
+        ref={cardRef}
+        className="w-full h-[320px] sm:h-[360px] md:h-[420px] lg:h-[450px] relative border border-white/10 bg-surface/50 rounded-2xl flex items-center justify-center cursor-pointer transform-style-3d group overflow-hidden shadow-2xl transition-all duration-300 group-hover:border-brand-purple/40"
         data-cursor="project"
       >
-        {/* Default State */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 z-10 transition-opacity duration-500 group-hover:opacity-0 md:group-hover:opacity-0 opacity-100">
-          <span className="text-brand-purple font-mono text-xl mb-4">[{data.id}]</span>
-          <h3 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white/50">{data.title}</h3>
+        {/* Default State: Displayed only on desktop when not hovered */}
+        <div className="hidden lg:flex absolute inset-0 flex-col items-center justify-center text-center p-8 z-10 transition-opacity duration-500 group-hover:opacity-0 pointer-events-none">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-brand-purple-light font-mono text-xl font-bold">[{data.id}]</span>
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest border border-white/10 px-2.5 py-1 rounded bg-black/30 backdrop-blur-sm">
+              {data.tag}
+            </span>
+          </div>
+          <h3 className="text-3xl lg:text-5xl font-black uppercase tracking-tighter text-white/60 group-hover:text-white transition-colors">
+            {data.title}
+          </h3>
+          <div className="mt-4 flex items-center gap-2 text-xs font-mono text-zinc-500 uppercase tracking-widest">
+            <span>Hover To Reveal</span>
+          </div>
         </div>
 
-        {/* Reveal State */}
-        <div ref={revealRef} className="absolute inset-0 z-20 overflow-hidden rounded-2xl bg-black border border-brand-purple/30">
+        {/* Reveal State: Active on hover (desktop) & permanently clean (mobile/tablet) */}
+        <div
+          ref={revealRef}
+          className="absolute inset-0 z-20 overflow-hidden rounded-2xl bg-[#080808] border border-white/10 group-hover:border-brand-purple/40 transition-colors"
+        >
+          {/* Visual Backdrop */}
           <div className="absolute inset-0 opacity-40">
             {data.image ? (
-              <Image src={data.image} alt={data.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover scale-110 group-hover:scale-100 transition-transform duration-1000 ease-[cubic-bezier(0.77,0,0.175,1)]" />
+              <Image
+                src={data.image}
+                alt={data.title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover scale-105 group-hover:scale-100 transition-transform duration-1000 ease-out"
+              />
             ) : (
-              <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(112,0,255,0.4)_0%,rgba(0,0,0,1)_100%)]"></div>
+              <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(112,0,255,0.3)_0%,rgba(5,5,5,1)_100%)]" />
             )}
           </div>
-          <div className="absolute inset-0 flex flex-col justify-between p-8 md:p-12 z-30 translate-z-10">
+
+          {/* Unified Content Overlay */}
+          <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8 md:p-12 z-30">
             <div className="flex justify-between items-start">
-              <span className="text-white font-mono text-2xl drop-shadow-xl">{data.id}</span>
-              <span className="text-xs font-bold uppercase tracking-widest text-brand-purple border border-brand-purple px-4 py-2 rounded-full backdrop-blur-md bg-black/30">Explore ↗</span>
+              <span className="text-white font-mono text-xl sm:text-2xl font-bold drop-shadow-xl">
+                [{data.id}]
+              </span>
+              <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-brand-purple-light border border-brand-purple/40 px-3 py-1.5 rounded-full backdrop-blur-md bg-black/40">
+                {data.tag}
+              </span>
             </div>
+
             <div>
-              <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white mb-4 drop-shadow-2xl">{data.title}</h3>
-              <p className="text-lg md:text-xl text-white/80 font-light max-w-md drop-shadow-xl">{data.desc}</p>
+              <div className="flex items-baseline justify-between gap-4 mb-2 sm:mb-3">
+                <h3 className="text-2xl sm:text-3xl md:text-5xl font-black uppercase tracking-tighter text-white drop-shadow-2xl">
+                  {data.title}
+                </h3>
+                <span className="text-brand-purple-light transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 shrink-0">
+                  <ArrowUpRight size={20} />
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm md:text-base text-zinc-300 font-light max-w-md drop-shadow-xl leading-relaxed">
+                {data.desc}
+              </p>
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-zinc-400">
+                <span className="uppercase text-brand-purple-light">Launch Creative Code</span>
+                <span>→</span>
+              </div>
             </div>
           </div>
         </div>
@@ -155,20 +164,21 @@ export function ExperimentsPlayground() {
   const containerRef = useRef<HTMLElement>(null);
   const leftColRef = useRef<HTMLDivElement>(null);
   const scrollProgress = useRef(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [inView, setInView] = useState(true);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.matchMedia("(max-width: 768px)").matches);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const checkViewport = () => setIsDesktop(window.matchMedia("(min-width: 1024px)").matches);
+    checkViewport();
+    window.addEventListener("resize", checkViewport);
+    return () => window.removeEventListener("resize", checkViewport);
   }, []);
 
   useEffect(() => {
     const mm = gsap.matchMedia();
 
-    mm.add("(prefers-reduced-motion: no-preference) and (min-width: 768px)", () => {
+    // GSAP Pinning aligned strictly with desktop 2-column layout (min-width: 1024px)
+    mm.add("(prefers-reduced-motion: no-preference) and (min-width: 1024px)", () => {
       if (!containerRef.current || !leftColRef.current) return;
 
       ScrollTrigger.create({
@@ -178,10 +188,10 @@ export function ExperimentsPlayground() {
         onUpdate: (self) => {
           scrollProgress.current = self.progress;
           setInView(self.isActive);
-        }
+        },
       });
 
-      // Pin the typography on the left while right scrolls
+      // Pin the typography on the left while right column scrolls
       ScrollTrigger.create({
         trigger: leftColRef.current,
         start: "top 20%",
@@ -191,16 +201,16 @@ export function ExperimentsPlayground() {
         pinSpacing: false,
       });
 
-      // Parallax text
+      // Subtle bounded parallax that never collides with fixed navbar
       gsap.to(".split-text-target", {
-        yPercent: -50,
+        yPercent: -15,
         ease: "none",
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
           end: "bottom top",
-          scrub: true
-        }
+          scrub: true,
+        },
       });
     });
 
@@ -208,43 +218,76 @@ export function ExperimentsPlayground() {
   }, []);
 
   return (
-    <section ref={containerRef} className="relative w-full bg-black min-h-screen pt-32 pb-32">
-      {/* 3D Visual Centerpiece / Artifact */}
-      {!isMobile && (
+    <section ref={containerRef} className="relative w-full bg-black min-h-screen pt-28 sm:pt-32 pb-28 sm:pb-32 overflow-hidden">
+      {/* 3D Visual Centerpiece / Artifact on desktop */}
+      {isDesktop && (
         <div className="fixed inset-0 z-0 flex items-center justify-center opacity-40 mix-blend-screen pointer-events-none">
           <DemonzLogo scrollProgress={scrollProgress} active={inView} />
         </div>
       )}
 
       <div className="max-w-[90rem] mx-auto px-6 md:px-12 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
-          
-          {/* Left Column: Fixed Typography */}
-          <div ref={leftColRef} className="lg:col-span-5 h-auto lg:h-[80vh] flex flex-col justify-start lg:pt-12 pointer-events-none">
-            <div className="overflow-hidden mb-4">
-              <h1 className="split-text-target text-[15vw] lg:text-[7vw] font-black tracking-tighter leading-[0.85] text-white uppercase origin-bottom">
-                EXPERIMENT
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20">
+          {/* Left Column: Typography Header */}
+          <div
+            ref={leftColRef}
+            className="lg:col-span-5 h-auto lg:h-[80vh] flex flex-col justify-start lg:pt-12 pointer-events-none"
+          >
+            <div className="mb-2 sm:mb-4">
+              <h1 className="split-text-target text-[clamp(2.25rem,10vw,4.5rem)] lg:text-[5.5vw] xl:text-[6.5vw] font-black tracking-tighter leading-[0.88] text-white uppercase origin-bottom">
+                EXPERIMENTS
               </h1>
             </div>
-            <div className="overflow-hidden">
-              <h1 className="split-text-target text-[15vw] lg:text-[7vw] font-black tracking-tighter leading-[0.85] text-brand-purple uppercase origin-bottom flex items-center gap-4">
+            <div>
+              <h1 className="split-text-target text-[clamp(2.25rem,10vw,4.5rem)] lg:text-[5.5vw] xl:text-[6.5vw] font-black tracking-tighter leading-[0.88] text-brand-purple-light uppercase origin-bottom flex items-center gap-3 sm:gap-4">
                 <span className="text-white/20 font-light">/</span>
                 PLAYGROUND
               </h1>
             </div>
-            <p className="mt-8 text-xl font-light text-white/50 max-w-sm mix-blend-difference">
-              A collection of digital interactions, visual concepts, and technical fragments designed by DEMONZ.
+            <p className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl font-light text-zinc-400 max-w-sm">
+              Experiments where code becomes motion, interaction, and visual systems.
             </p>
+
+            {/* Creative Code Continuity Bridge */}
+            <div className="mt-8 pointer-events-auto">
+              <TransitionLink
+                href="/creative/creative-code"
+                className="inline-flex items-center gap-2.5 text-xs font-mono font-bold tracking-widest uppercase text-brand-purple-light hover:text-white transition-colors group"
+              >
+                <span>Explore Creative Code Reel</span>
+                <span className="transition-transform group-hover:translate-x-1">→</span>
+              </TransitionLink>
+            </div>
           </div>
 
-          {/* Right Column: Scrollable Cards */}
-          <div className="lg:col-span-7 mt-12 lg:mt-0 pt-0 lg:pt-[20vh] pb-[10vh]">
+          {/* Right Column: Clickable Experiment Cards */}
+          <div className="lg:col-span-7 mt-8 lg:mt-0 pt-0 lg:pt-[16vh] pb-[8vh]">
             {experimentsData.map((exp) => (
-              <ExperimentCard key={exp.id} data={exp} />
+              <TransitionLink
+                key={exp.id}
+                href={exp.href || "/creative/creative-code"}
+                data-cursor="project"
+                className="block group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple rounded-2xl mb-10 last:mb-0"
+              >
+                <ExperimentCard data={exp} />
+              </TransitionLink>
             ))}
           </div>
-
         </div>
+      </div>
+
+      {/* Continuity Footer */}
+      <div className="max-w-[90rem] mx-auto mt-20 pt-10 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs font-mono relative z-10 px-6 md:px-12">
+        <span className="text-zinc-500 uppercase tracking-wider">
+          04 Computational Experiments Active
+        </span>
+        <TransitionLink
+          href="/creative/creative-code"
+          className="text-brand-purple-light hover:text-white transition-colors uppercase tracking-widest font-bold flex items-center gap-2"
+        >
+          <span>View Creative Code Archive</span>
+          <span>→</span>
+        </TransitionLink>
       </div>
     </section>
   );

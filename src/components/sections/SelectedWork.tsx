@@ -3,16 +3,18 @@
 import Image from "next/image";
 import { getFeaturedProjects, projects } from "@/data/projects";
 import { TransitionLink } from "@/components/layout/PageTransition";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 export function SelectedWork() {
   const featuredProjects = getFeaturedProjects();
+  const sectionRef = useScrollReveal<HTMLElement>({ selector: "[data-home-reveal]", stagger: 0.08 });
 
   return (
-    <section id="selected-work" className="py-32 md:py-44 px-6 md:px-12 bg-background relative z-10 border-t border-white/5">
+    <section ref={sectionRef} id="selected-work" className="py-32 md:py-44 px-6 md:px-12 bg-background relative z-10 border-t border-white/5">
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 md:mb-32 gap-6 border-b border-white/10 pb-8">
+        <div data-home-reveal className="flex flex-col md:flex-row md:items-end justify-between mb-24 md:mb-32 gap-6 border-b border-white/10 pb-8">
           <div>
             <span className="text-xs font-mono tracking-widest text-brand-purple-light uppercase mb-4 block">
               01 // SELECTED WORK
@@ -34,10 +36,12 @@ export function SelectedWork() {
             const accent = project.accentColor || "#7000FF";
             const isFlagship = index === 0;
             const isPortrait = project.media.orientation === "portrait";
+            const isSquare = project.media.orientation === "square" || project.media.aspectRatio === "1/1";
 
             return (
               <div 
                 key={project.id}
+                data-home-reveal
                 className={`grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center ${
                   isEven ? "lg:grid-flow-dense" : ""
                 }`}
@@ -134,7 +138,11 @@ export function SelectedWork() {
                     {/* Presentation Stage */}
                     <div className="relative z-10 w-full flex items-center justify-center">
                       {isPortrait ? (
-                        <div className="relative w-full max-w-[260px] sm:max-w-[300px] md:max-w-[320px] aspect-[9/20] rounded-2xl overflow-hidden border border-white/15 bg-black/80 shadow-2xl transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                        <div className={`relative w-full ${
+                          project.media.aspectRatio === "4/5"
+                            ? "max-w-[280px] sm:max-w-[320px] md:max-w-[340px] aspect-[4/5]"
+                            : "max-w-[260px] sm:max-w-[300px] md:max-w-[320px] aspect-[9/20]"
+                        } rounded-2xl overflow-hidden border border-white/15 bg-black/80 shadow-2xl transition-transform duration-700 ease-out group-hover:scale-[1.03]`}>
                           <Image 
                             src={primaryVisual}
                             alt={`${project.title} Dashboard Screenshot`}
@@ -143,6 +151,19 @@ export function SelectedWork() {
                             className="object-contain"
                             priority={index === 0}
                           />
+                        </div>
+                      ) : isSquare ? (
+                        <div className="relative w-full max-w-[300px] sm:max-w-[340px] md:max-w-[380px] aspect-square rounded-2xl overflow-hidden bg-black/40 border border-white/5 p-4 sm:p-6 md:p-8 flex items-center justify-center transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                          <div className="relative w-full h-full flex items-center justify-center">
+                            <Image
+                              src={primaryVisual}
+                              alt={`${project.title} Visual Presentation`}
+                              fill
+                              sizes="(max-width: 768px) 300px, 380px"
+                              className="object-contain drop-shadow-2xl"
+                              priority={index === 0}
+                            />
+                          </div>
                         </div>
                       ) : (
                         <div 

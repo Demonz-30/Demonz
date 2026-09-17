@@ -1,16 +1,18 @@
 "use client";
 
+import { useScrollReveal } from "@/lib/useScrollReveal";
+
 import { primaryCapabilities } from "@/data/capabilities";
 
-const capabilities = primaryCapabilities;
-
 export function Capabilities() {
+  const sectionRef = useScrollReveal<HTMLElement>({ selector: "[data-home-reveal]", stagger: 0.07 });
+
   return (
-    <section id="capabilities" className="py-32 md:py-44 px-6 md:px-12 bg-background relative z-10 border-t border-white/5">
+    <section ref={sectionRef} id="capabilities" className="py-32 md:py-44 px-6 md:px-12 bg-background relative z-10 border-t border-white/5">
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 md:mb-28 gap-6 border-b border-white/10 pb-8">
+        <div data-home-reveal className="flex flex-col md:flex-row md:items-end justify-between mb-20 md:mb-28 gap-6 border-b border-white/10 pb-8">
           <div>
             <span className="text-xs font-mono tracking-widest text-brand-purple-light uppercase mb-4 block">
               02 // CAPABILITIES
@@ -26,13 +28,14 @@ export function Capabilities() {
 
         {/* Architectural Editorial Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 border-t border-b border-white/10 divide-y divide-white/10 lg:divide-y-0">
-          {capabilities.map((group, index) => {
+          {primaryCapabilities.map((group, index) => {
             const isRightCol = index % 2 === 1;
             const isBottomRow = index >= 2;
 
             return (
               <div 
                 key={group.id}
+                data-home-reveal
                 className={`py-12 md:py-16 ${
                   isRightCol ? "lg:pl-16 lg:border-l lg:border-white/10" : "lg:pr-16"
                 } ${
